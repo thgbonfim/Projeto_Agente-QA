@@ -1,0 +1,165 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 4,
+    "passes": 4,
+    "pending": 0,
+    "failures": 0,
+    "start": "2026-04-05T16:00:43.402Z",
+    "end": "2026-04-05T16:00:52.846Z",
+    "duration": 9444,
+    "testsRegistered": 4,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "bf552152-a7e7-42fc-a772-4d5e74ae969b",
+      "title": "",
+      "fullFile": "cypress\\e2e\\duplicatas.cy.js",
+      "file": "cypress\\e2e\\duplicatas.cy.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "26b9bbd0-fa8b-4dac-931f-80c36af29f45",
+          "title": "Teste de Duplicatas",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Deve registrar uma nova operação",
+              "fullTitle": "Teste de Duplicatas Deve registrar uma nova operação",
+              "timedOut": null,
+              "duration": 4193,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.get('#razao-social').type('Accenture Brasil');\ncy.get('#documento-cnpj').type('00.000.000/0000-00');\ncy.get('#valor-operacao').type('1000');\ncy.get('#btn-gerar-duplicata').click();\ncy.get('#feedback-sistema', {\n  timeout: 3000\n}).should('be.visible');\ncy.get('#feedback-sistema', {\n  timeout: 3000\n}).should('contain', 'Operação registrada no inventário com sucesso!');",
+              "err": {},
+              "uuid": "78ade7e0-2e95-4477-a05b-3beccda12e44",
+              "parentUUID": "26b9bbd0-fa8b-4dac-931f-80c36af29f45",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "Não deve registrar uma nova operação com campos vazios",
+              "fullTitle": "Teste de Duplicatas Não deve registrar uma nova operação com campos vazios",
+              "timedOut": null,
+              "duration": 186,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.get('#btn-gerar-duplicata').click();\ncy.get('#feedback-sistema', {\n  timeout: 3000\n}).should('be.visible');\ncy.get('#feedback-sistema', {\n  timeout: 3000\n}).should('contain', 'ERRO: Preencha todos os campos da duplicata!');",
+              "err": {},
+              "uuid": "2e0254b3-28e6-4c94-8771-44f8bb0d18ce",
+              "parentUUID": "26b9bbd0-fa8b-4dac-931f-80c36af29f45",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "Deve exibir a lista de duplicatas",
+              "fullTitle": "Teste de Duplicatas Deve exibir a lista de duplicatas",
+              "timedOut": null,
+              "duration": 75,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.get('#lista-duplicatas tr').should('have.length', 1);",
+              "err": {},
+              "uuid": "85df7ce5-f7a9-4959-9569-b5096eab9d0e",
+              "parentUUID": "26b9bbd0-fa8b-4dac-931f-80c36af29f45",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "Deve adicionar uma nova duplicata à lista",
+              "fullTitle": "Teste de Duplicatas Deve adicionar uma nova duplicata à lista",
+              "timedOut": null,
+              "duration": 3656,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.get('#razao-social').type('Accenture Brasil');\ncy.get('#documento-cnpj').type('00.000.000/0000-00');\ncy.get('#valor-operacao').type('1000');\ncy.get('#btn-gerar-duplicata').click();\ncy.get('#lista-duplicatas tr', {\n  timeout: 3000\n}).should('have.length', 2);",
+              "err": {},
+              "uuid": "92070f39-5a53-472c-8bcd-a15417f71b79",
+              "parentUUID": "26b9bbd0-fa8b-4dac-931f-80c36af29f45",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "78ade7e0-2e95-4477-a05b-3beccda12e44",
+            "2e0254b3-28e6-4c94-8771-44f8bb0d18ce",
+            "85df7ce5-f7a9-4959-9569-b5096eab9d0e",
+            "92070f39-5a53-472c-8bcd-a15417f71b79"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 8110,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.2.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": true,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.4"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/reports",
+        "overwrite": true,
+        "html": true,
+        "json": true,
+        "inline": true,
+        "inlineAssets": true,
+        "charts": true
+      },
+      "version": "6.3.2"
+    }
+  }
+}

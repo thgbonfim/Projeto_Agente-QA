@@ -1,0 +1,7 @@
+*.env
+__pycache__/
+node_modules/
+cypress/videos/
+cypress/screenshots/
+*.png
+*.log
