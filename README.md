@@ -1,8 +1,4 @@
-Fala, Thiago! Essa estrutura de **Readme** está ficando animal, mas como agora migrámos tudo para o **Ollama (Qwen 2.5 Coder)** para rodar 100% local aí na sua máquina em São Paulo, precisamos atualizar o "cartão de visitas" do projeto para refletir essa potência.
 
-Aqui está uma versão editada e mais profissional, com foco em **Eficiência Local** e **Privacidade**, ideal para o seu portfólio de QA Senior:
-
----
 
 # 🚜 Squad Digital Autônoma - 100% Local AI Driven
 
