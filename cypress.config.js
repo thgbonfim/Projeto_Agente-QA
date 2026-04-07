@@ -1,6 +1,9 @@
 const { defineConfig } = require("cypress");
 
 module.exports = defineConfig({
+  // Corrige o Warning de segurança sobre variáveis de ambiente
+  allowCypressEnv: false, 
+  
   e2e: {
     setupNodeEvents(on, config) {},
     video: false,

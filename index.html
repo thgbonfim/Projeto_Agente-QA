@@ -7,6 +7,10 @@
     <style>
         .loader { border-top-color: #1e40af; animation: spinner 1s linear infinite; }
         @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        body {
+            background-color: #1a1f2b;
+            color: white;
+        }
     </style>
 </head>
 <body class="bg-slate-900 p-8 text-slate-200">
@@ -20,15 +24,15 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
                     <label class="block text-sm mb-2">Razão Social</label>
-                    <input type="text" id="razao-social" placeholder="Ex: Accenture Brasil" class="w-full p-3 bg-slate-800 border border-slate-600 rounded focus:border-blue-500 outline-none text-white">
+                    <input type="text" id="input-razao-social" placeholder="Ex: Accenture Brasil" class="w-full p-3 bg-slate-800 border border-slate-600 rounded focus:border-blue-500 outline-none text-white">
                 </div>
                 <div>
                     <label class="block text-sm mb-2">CNPJ do Sacado</label>
-                    <input type="text" id="documento-cnpj" placeholder="00.000.000/0000-00" class="w-full p-3 bg-slate-800 border border-slate-600 rounded focus:border-blue-500 outline-none text-white">
+                    <input type="text" id="input-cnpj" placeholder="00.000.000/0000-00" class="w-full p-3 bg-slate-800 border border-slate-600 rounded focus:border-blue-500 outline-none text-white">
                 </div>
                 <div>
                     <label class="block text-sm mb-2">Valor Nominal (R$)</label>
-                    <input type="number" id="valor-operacao" placeholder="0.00" class="w-full p-3 bg-slate-800 border border-slate-600 rounded focus:border-blue-500 outline-none text-white">
+                    <input type="number" id="input-valor-operacao" placeholder="0.00" step="0.01" class="w-full p-3 bg-slate-800 border border-slate-600 rounded focus:border-blue-500 outline-none text-white">
                 </div>
             </div>
             
@@ -37,6 +41,7 @@
                     Confirmar Registro
                 </button>
                 <div id="loading" class="loader w-8 h-8 border-4 border-slate-600 rounded-full hidden"></div>
+                <p id="msg-erro" class="mt-4 font-bold text-lg hidden text-red-500"></p>
             </div>
             
             <p id="feedback-sistema" class="mt-4 font-bold text-lg hidden"></p>
@@ -45,7 +50,7 @@
         <section>
             <h2 class="text-xl font-bold mb-6 text-white">Inventário de Títulos</h2>
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse bg-slate-800">
+                <table id="lista-duplicatas" class="w-full text-left border-collapse bg-slate-800">
                     <thead>
                         <tr class="text-blue-400 border-b border-slate-600">
                             <th class="p-4 uppercase text-xs">Nº Título</th>
@@ -55,17 +60,6 @@
                             <th class="p-4 uppercase text-xs text-center">Status</th>
                         </tr>
                     </thead>
-                    <tbody id="lista-duplicatas">
-                        <tr class="border-b border-slate-700 hover:bg-slate-700 transition-colors" data-testid="duplicata-row">
-                            <td class="p-4 text-slate-400">#TR-88291</td>
-                            <td class="p-4 font-semibold text-white">Accenture Tecnologia Ltda</td>
-                            <td class="p-4 text-slate-400">12.345.678/0001-99</td>
-                            <td class="p-4 text-right text-emerald-400 font-mono">R$ 50.000,00</td>
-                            <td class="p-4 text-center">
-                                <span class="bg-emerald-900 text-emerald-300 px-3 py-1 rounded-full text-xs">EM ABERTO</span>
-                            </td>
-                        </tr>
-                    </tbody>
                 </table>
             </div>
         </section>
@@ -73,64 +67,46 @@
 
     <script>
     function processarOperacao() {
-        const feedback = document.getElementById('feedback-sistema');
-        const loader = document.getElementById('loading');
-        const btn = document.getElementById('btn-gerar-duplicata');
-        const tabela = document.getElementById('lista-duplicatas');
+        const msgErro = document.getElementById('msg-erro');
         
         // Captura os dados dos inputs
-        const razao = document.getElementById('razao-social').value.trim();
-        const cnpj = document.getElementById('documento-cnpj').value.trim();
-        const valor = document.getElementById('valor-operacao').value.trim();
+        const razaoSocial = document.getElementById('input-razao-social').value.trim();
+        const cnpj = document.getElementById('input-cnpj').value.replace(/[^\d]/g, '').trim();
+        const valor = document.getElementById('input-valor-operacao').value.trim();
 
         // 1. Validação de segurança
-        if (razao === "" || cnpj === "" || valor === "") {
-            feedback.innerText = "❌ ERRO: Preencha todos os campos da duplicata!";
-            feedback.style.color = "#f87171"; 
-            feedback.classList.remove('hidden');
+        if (razaoSocial === "" || cnpj === "" || valor === "") {
+            msgErro.innerText = "Por favor, preencha todos os campos obrigatórios.";
+            msgErro.classList.remove('hidden');
             return;
         }
 
-        // 2. Inicia processamento visual
-        btn.disabled = true;
-        btn.innerText = "Processando...";
-        feedback.classList.add('hidden');
-        loader.classList.remove('hidden');
+        msgErro.classList.add('hidden');
 
-        // 3. Simula delay de integração bancária
-        setTimeout(() => {
-            loader.classList.add('hidden');
-            btn.disabled = false;
-            btn.innerText = "Confirmar Registro";
-            
-            // 4. Lógica para ADICIONAR NA TABELA (Inventário)
-            const novaLinha = document.createElement('tr');
-            novaLinha.className = "border-b border-slate-700 hover:bg-slate-700 transition-colors";
-            // Geramos um número de título aleatório para simular o sistema
-            const numTitulo = "TR-" + Math.floor(Math.random() * 90000 + 10000);
-            
-            novaLinha.innerHTML = `
-                <td class="p-4 text-slate-400">#${numTitulo}</td>
-                <td class="p-4 font-semibold text-white">${razao}</td>
-                <td class="p-4 text-slate-400">${cnpj}</td>
-                <td class="p-4 text-right text-emerald-400 font-mono">R$ ${parseFloat(valor).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
-                <td class="p-4 text-center">
-                    <span class="bg-blue-900 text-blue-300 px-3 py-1 rounded-full text-xs">PROCESSADO</span>
-                </td>
-            `;
+        // Formatar o CNPJ
+        const formattedCNPJ = cnpj.substring(0, 2) + '.' + cnpj.substring(2, 5) + '.' + cnpj.substring(5, 8) + '/' + cnpj.substring(8, 12) + '-' + cnpj.substring(12);
 
-            // Insere no topo da lista
-            tabela.insertBefore(novaLinha, tabela.firstChild);
+        // 2. Lógica para ADICIONAR NA TABELA (Inventário)
+        const novaLinha = document.createElement('tr');
+        novaLinha.className = "border-b border-slate-700 hover:bg-slate-700 transition-colors";
+        
+        novaLinha.innerHTML = `
+            <td class="p-4 text-slate-400">TR-${Math.floor(Math.random() * 90000 + 10000)}</td>
+            <td class="p-4 font-semibold text-white">${razaoSocial}</td>
+            <td class="p-4 text-slate-400">${formattedCNPJ}</td>
+            <td class="p-4 text-right text-emerald-400 font-mono">R$ ${parseFloat(valor).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+            <td class="p-4 text-center">
+                <span class="bg-blue-900 text-blue-300 px-3 py-1 rounded-full text-xs">PROCESSADO</span>
+            </td>
+        `;
 
-            // 5. Mostra sucesso e limpa campos
-            feedback.innerText = "✅ Operação registrada no inventário com sucesso!";
-            feedback.classList.remove('hidden');
-            feedback.style.color = "#4ade80"; 
-            
-            document.getElementById('razao-social').value = "";
-            document.getElementById('documento-cnpj').value = "";
-            document.getElementById('valor-operacao').value = "";
-        }, 2500);
+        // Insere no topo da lista
+        document.getElementById('lista-duplicatas').insertBefore(novaLinha, document.getElementById('lista-duplicatas').firstChild);
+
+        // 3. Limpa campos
+        document.getElementById('input-razao-social').value = "";
+        document.getElementById('input-cnpj').value = "";
+        document.getElementById('input-valor-operacao').value = "";
     }
 </script>
 </body>

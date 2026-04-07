@@ -1,63 +1,35 @@
 import os
+import ollama
 from jira import JIRA
-from groq import Groq
 from dotenv import load_dotenv
 
 load_dotenv()
-
 jira = JIRA(server=os.getenv("JIRA_SERVER"), basic_auth=(os.getenv("JIRA_EMAIL"), os.getenv("JIRA_TOKEN")))
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
-def gerar_historia_erp_duplicatas():
-    print("🧠 P.O. Analisando Regras do Módulo de Duplicatas...")
+def gerar_story_local():
+    print("🧠 [P.O. LOCAL] Gerando requisitos via Ollama...")
     
-    # Prompt avançado focado em ERP e Inventário
     prompt = """
-    Você é um Product Owner de ERP Bancário. Sua missão é criar uma Story técnica para o 'Módulo de Duplicatas'.
-    
-    CONTEXTO DO PRODUTO (HTML):
-    - Nome: ERP INVENTÁRIO - MÓDULO DUPLICATAS.
-    - Campos: Razão Social, CNPJ do Sacado, Valor Nominal.
-    - Comportamento: O sistema simula um delay de 2.5s de integração e insere na 'Grade de Inventário'.
-    
-    ESTRUTURA DA STORY:
-    1. Título focado em 'Registro de Título no Inventário'.
-    2. User Story: (Como Analista Financeiro... Quero registrar duplicatas PJ... Para controle de inventário).
-    3. Critérios de Aceite Rigorosos:
-       - Validação de campos obrigatórios (Razão, CNPJ, Valor).
-       - Verificação de que o título aparece na tabela após o 'Loading'.
-       - O status do novo título deve ser 'PROCESSADO'.
-    4. Cenário Gherkin para o QA:
-       Dado que estou no Módulo de Duplicatas, Quando preencho os dados PJ corretamente e clico em Confirmar, Então o título deve constar na Grade de Inventário.
-
-    Responda apenas o conteúdo da Task (Markdown).
+    Você é um P.O. Senior. Crie uma Story para: 'Cadastro de Duplicatas'.
+    REGRAS: 
+    1. Use IDs: #input-razao-social, #input-cnpj, #input-valor-operacao, #btn-gerar-duplicata, #msg-erro.
+    2. Layout: Dark Theme (#1a1f2b).
+    3. Critério: Exibir erro se campos obrigatórios estiverem vazios.
+    Responda apenas o conteúdo da Story em Markdown.
     """
 
-    completion = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.6 # Menos criatividade, mais precisão técnica
-    )
-    
-    return completion.choices[0].message.content
+    res = ollama.chat(model='qwen2.5-coder', messages=[{'role': 'user', 'content': prompt}])
+    conteudo = res['message']['content'].strip()
 
-def enviar_ao_jira(conteudo):
-    print("📝 Enviando Requisito de Negócio ao Jira...")
-    
-    # Pega o título da primeira linha ou gera um padrão
-    titulo_limpo = conteudo.split('\n')[0].replace("#", "").replace("Título:", "").strip()
-    
     issue_dict = {
         'project': 'KAN',
-        'summary': f'[ERP-DUPLICATAS] {titulo_limpo}',
+        'summary': '[ERP] Cadastro de Duplicatas - Squad Local',
         'description': conteudo,
         'issuetype': {'name': 'Story'},
     }
     
-    new_issue = jira.create_issue(fields=issue_dict)
-    print(f"✅ Story de Inventário Criada: {new_issue.key}")
-    return new_issue.key
+    nova_issue = jira.create_issue(fields=issue_dict)
+    print(f"✅ Story {nova_issue.key} criada!")
 
 if __name__ == "__main__":
-    conteudo_story = gerar_historia_erp_duplicatas()
-    enviar_ao_jira(conteudo_story)
+    gerar_story_local()
