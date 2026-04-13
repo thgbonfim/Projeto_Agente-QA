@@ -2,112 +2,203 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>SISTEMA DE DUPLICATAS - CORPORATIVO</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERP INVENTÁRIO - MÓDULO DUPLICATAS</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        .loader { border-top-color: #1e40af; animation: spinner 1s linear infinite; }
-        @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        body {
-            background-color: #1a1f2b;
-            color: white;
-        }
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); }
+        .input-field { transition: all 0.3s ease; }
+        .input-field:focus { box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-msg { animation: fadeIn 0.3s ease forwards; }
     </style>
 </head>
-<body class="bg-slate-900 p-8 text-slate-200">
-    <div class="mx-auto max-w-5xl bg-slate-800 p-8 rounded-xl shadow-2xl border border-slate-700">
-        <h1 class="text-3xl font-extrabold mb-8 text-blue-400 flex items-center">
-            <span class="mr-3">🏢</span> ERP INVENTÁRIO - MÓDULO DUPLICATAS
-        </h1>
+<body class="text-slate-200 min-h-screen p-4 md:p-8">
+    <div class="mx-auto max-w-6xl glass p-8 rounded-2xl shadow-2xl border border-slate-700/50">
+        
+        <header class="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4">
+            <div>
+                <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">
+                    🏢 ERP CORPORATIVO
+                </h1>
+                <p class="text-slate-400 text-sm mt-1">Gestão de Inventário & Duplicatas</p>
+            </div>
+            <div class="flex gap-2">
+                <span class="bg-blue-500/10 text-blue-400 px-3 py-1 rounded-full text-xs font-bold border border-blue-500/20">Módulo Ativo</span>
+                <span class="bg-slate-700 text-slate-300 px-3 py-1 rounded-full text-xs font-bold border border-slate-600">v2.4.0</span>
+            </div>
+        </header>
 
-        <section class="mb-12 p-6 bg-slate-700 rounded-lg border-l-8 border-blue-500">
-            <h2 class="text-xl font-bold mb-6 text-white">Registrar Nova Operação</h2>
+        <section class="mb-12 bg-slate-800/50 p-6 rounded-xl border border-slate-700 shadow-inner">
+            <h2 class="text-lg font-semibold mb-6 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                </svg>
+                Nova Operação
+            </h2>
+            
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div>
-                    <label class="block text-sm mb-2">Razão Social</label>
-                    <input type="text" id="input-razao-social" placeholder="Ex: Accenture Brasil" class="w-full p-3 bg-slate-800 border border-slate-600 rounded focus:border-blue-500 outline-none text-white">
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">Razão Social</label>
+                    <input type="text" id="input-razao-social" placeholder="Nome da Empresa" 
+                           class="input-field w-full p-3 bg-slate-900/50 border border-slate-600 rounded-lg outline-none text-white placeholder:text-slate-600">
                 </div>
-                <div>
-                    <label class="block text-sm mb-2">CNPJ do Sacado</label>
-                    <input type="text" id="input-cnpj" placeholder="00.000.000/0000-00" class="w-full p-3 bg-slate-800 border border-slate-600 rounded focus:border-blue-500 outline-none text-white">
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">CNPJ do Sacado</label>
+                    <input type="text" id="input-cnpj" placeholder="00.000.000/0000-00" 
+                           class="input-field w-full p-3 bg-slate-900/50 border border-slate-600 rounded-lg outline-none text-white placeholder:text-slate-600">
                 </div>
-                <div>
-                    <label class="block text-sm mb-2">Valor Nominal (R$)</label>
-                    <input type="number" id="input-valor-operacao" placeholder="0.00" step="0.01" class="w-full p-3 bg-slate-800 border border-slate-600 rounded focus:border-blue-500 outline-none text-white">
+                <div class="space-y-2">
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">Valor (R$)</label>
+                    <input type="number" id="input-valor-operacao" placeholder="0,00" step="0.01" 
+                           class="input-field w-full p-3 bg-slate-900/50 border border-slate-600 rounded-lg outline-none text-white placeholder:text-slate-600 font-mono">
                 </div>
             </div>
-            
-            <div class="mt-6 flex items-center gap-4">
-                <button id="btn-gerar-duplicata" onclick="processarOperacao()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-lg transition-all">
+
+            <div class="mt-8 flex flex-wrap items-center gap-4">
+                <button id="btn-gerar-duplicata" onclick="processarOperacao()" 
+                        class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-10 rounded-xl transition-all shadow-lg shadow-blue-900/20 active:scale-95">
                     Confirmar Registro
                 </button>
-                <div id="loading" class="loader w-8 h-8 border-4 border-slate-600 rounded-full hidden"></div>
-                <p id="msg-erro" class="mt-4 font-bold text-lg hidden text-red-500"></p>
+                <button id="btn-limpar" onclick="limparCampos()" 
+                        class="bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold py-3 px-8 rounded-xl transition-all active:scale-95">
+                    Limpar
+                </button>
+                
+                <div class="flex flex-col">
+                    <p id="msg-erro" class="font-bold text-sm text-red-400 animate-msg" style="display: none;"></p>
+                    <p id="msg-sucesso" class="font-bold text-sm text-emerald-400 animate-msg" style="display: none;"></p>
+                    <p id="feedback-sistema" class="font-bold text-sm text-blue-400 animate-msg" style="display: none;"></p>
+                </div>
             </div>
-            
-            <p id="feedback-sistema" class="mt-4 font-bold text-lg hidden"></p>
         </section>
 
         <section>
-            <h2 class="text-xl font-bold mb-6 text-white">Inventário de Títulos</h2>
-            <div class="overflow-x-auto">
-                <table id="lista-duplicatas" class="w-full text-left border-collapse bg-slate-800">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold">Inventário de Títulos</h2>
+                <span class="text-slate-500 text-sm" id="contador-titulos">0 títulos encontrados</span>
+            </div>
+            
+            <div class="overflow-hidden rounded-xl border border-slate-700 shadow-xl bg-slate-800/30">
+                <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr class="text-blue-400 border-b border-slate-600">
-                            <th class="p-4 uppercase text-xs">Nº Título</th>
-                            <th class="p-4 uppercase text-xs">Empresa / Sacado</th>
-                            <th class="p-4 uppercase text-xs">CNPJ</th>
-                            <th class="p-4 uppercase text-xs text-right">Valor</th>
-                            <th class="p-4 uppercase text-xs text-center">Status</th>
+                        <tr class="bg-slate-800/80 text-blue-400 border-b border-slate-700">
+                            <th class="p-4 text-xs font-bold uppercase tracking-widest">Nº Título</th>
+                            <th class="p-4 text-xs font-bold uppercase tracking-widest">Empresa</th>
+                            <th class="p-4 text-xs font-bold uppercase tracking-widest text-center">Status</th>
+                            <th class="p-4 text-xs font-bold uppercase tracking-widest text-right">Valor Nominal</th>
+                            <th class="p-4 text-xs font-bold uppercase tracking-widest text-center">Ações</th>
                         </tr>
                     </thead>
+                    <tbody id="lista-duplicatas" class="divide-y divide-slate-700/50">
+                        </tbody>
                 </table>
             </div>
         </section>
     </div>
 
-    <script>
-    function processarOperacao() {
-        const msgErro = document.getElementById('msg-erro');
-        
-        // Captura os dados dos inputs
-        const razaoSocial = document.getElementById('input-razao-social').value.trim();
-        const cnpj = document.getElementById('input-cnpj').value.replace(/[^\d]/g, '').trim();
-        const valor = document.getElementById('input-valor-operacao').value.trim();
+<script>
+ 
+let totalTitulos = 0;
 
-        // 1. Validação de segurança
-        if (razaoSocial === "" || cnpj === "" || valor === "") {
-            msgErro.innerText = "Por favor, preencha todos os campos obrigatórios.";
-            msgErro.classList.remove('hidden');
-            return;
-        }
+// 🔥 controle global de timeout
+let timeoutSucesso = null;
+let timeoutFeedback = null;
 
-        msgErro.classList.add('hidden');
+function processarOperacao() {
+    const msgErro = document.getElementById('msg-erro');
+    const msgSucesso = document.getElementById('msg-sucesso');
+    const feedback = document.getElementById('feedback-sistema');
 
-        // Formatar o CNPJ
-        const formattedCNPJ = cnpj.substring(0, 2) + '.' + cnpj.substring(2, 5) + '.' + cnpj.substring(5, 8) + '/' + cnpj.substring(8, 12) + '-' + cnpj.substring(12);
+    // 🔥 limpa timeouts antigos
+    if (timeoutSucesso) clearTimeout(timeoutSucesso);
 
-        // 2. Lógica para ADICIONAR NA TABELA (Inventário)
-        const novaLinha = document.createElement('tr');
-        novaLinha.className = "border-b border-slate-700 hover:bg-slate-700 transition-colors";
-        
-        novaLinha.innerHTML = `
-            <td class="p-4 text-slate-400">TR-${Math.floor(Math.random() * 90000 + 10000)}</td>
-            <td class="p-4 font-semibold text-white">${razaoSocial}</td>
-            <td class="p-4 text-slate-400">${formattedCNPJ}</td>
-            <td class="p-4 text-right text-emerald-400 font-mono">R$ ${parseFloat(valor).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
-            <td class="p-4 text-center">
-                <span class="bg-blue-900 text-blue-300 px-3 py-1 rounded-full text-xs">PROCESSADO</span>
-            </td>
-        `;
+    msgErro.style.display = 'none';
+    msgSucesso.style.display = 'none';
+    feedback.style.display = 'none';
 
-        // Insere no topo da lista
-        document.getElementById('lista-duplicatas').insertBefore(novaLinha, document.getElementById('lista-duplicatas').firstChild);
+    const razao = document.getElementById('input-razao-social').value.trim();
+    const cnpj = document.getElementById('input-cnpj').value.trim();
+    const valor = document.getElementById('input-valor-operacao').value.trim();
 
-        // 3. Limpa campos
-        document.getElementById('input-razao-social').value = "";
-        document.getElementById('input-cnpj').value = "";
-        document.getElementById('input-valor-operacao').value = "";
+    if (!razao || !cnpj || !valor) {
+        msgErro.innerText = "⚠️ Erro: Preencha todos os campos obrigatórios.";
+        msgErro.style.display = 'block';
+        return;
     }
+
+    const novaLinha = document.createElement('tr');
+    novaLinha.className = "hover:bg-slate-700/30 transition-colors animate-msg";
+    novaLinha.innerHTML = `
+        <td class="p-4 text-blue-400 font-mono text-sm font-semibold">TR-${Math.floor(Math.random() * 90000 + 10000)}</td>
+        <td class="p-4">
+            <div class="font-semibold text-slate-100">${razao}</div>
+            <div class="text-xs text-slate-500">${cnpj}</div>
+        </td>
+        <td class="p-4 text-center">
+            <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1 rounded-full text-[10px] font-bold">PROCESSADO</span>
+        </td>
+        <td class="p-4 text-right font-mono text-emerald-400 font-bold">
+            R$ ${parseFloat(valor).toLocaleString('pt-BR', {minimumFractionDigits: 2})}
+        </td>
+        <td class="p-4 text-center">
+            <button onclick="apagarDuplicata(this)" 
+                    class="p-2 hover:bg-red-500/10 text-red-500 rounded-lg transition-all group">
+                🗑️
+            </button>
+        </td>
+    `;
+
+    document.getElementById('lista-duplicatas').prepend(novaLinha);
+
+    totalTitulos++;
+    document.getElementById('contador-titulos').innerText = `${totalTitulos} títulos encontrados`;
+
+    msgSucesso.innerText = "✅ Registro efetuado com sucesso!";
+    msgSucesso.style.display = 'block';
+
+    // 🔥 novo timeout controlado
+    timeoutSucesso = setTimeout(() => {
+        msgSucesso.style.display = 'none';
+        limparCampos();
+    }, 2000);
+}
+
+function limparCampos() {
+    document.getElementById('input-razao-social').value = "";
+    document.getElementById('input-cnpj').value = "";
+    document.getElementById('input-valor-operacao').value = "";
+
+    document.getElementById('msg-erro').style.display = 'none';
+}
+
+function apagarDuplicata(btn) {
+    const msgSucesso = document.getElementById('msg-sucesso');
+    const msgErro = document.getElementById('msg-erro');
+    const fb = document.getElementById('feedback-sistema');
+
+    // 🔥 limpa timeouts antigos
+    if (timeoutSucesso) clearTimeout(timeoutSucesso);
+    if (timeoutFeedback) clearTimeout(timeoutFeedback);
+
+    msgSucesso.style.display = 'none';
+    msgErro.style.display = 'none';
+
+    btn.closest('tr').remove();
+
+    totalTitulos--;
+    document.getElementById('contador-titulos').innerText = `${totalTitulos} títulos encontrados`;
+
+    fb.innerText = "🗑️ Título removido do inventário.";
+    fb.style.display = 'block';
+
+    timeoutFeedback = setTimeout(() => {
+        fb.style.display = 'none';
+    }, 3000);
+}
+</script>
 </script>
 </body>
 </html>

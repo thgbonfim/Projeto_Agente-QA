@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>QA Brain - Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      background: #0f172a;
+      color: #fff;
+    }
+
+    header {
+      padding: 20px;
+      font-size: 22px;
+      font-weight: bold;
+      background: #020617;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    .container {
+      padding: 20px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .card {
+      background: #1e293b;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+
+    h2 {
+      margin-top: 0;
+      font-size: 16px;
+      color: #38bdf8;
+    }
+
+    .big {
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    pre {
+      font-size: 12px;
+      max-height: 200px;
+      overflow: auto;
+    }
+  </style>
+</head>
+<body>
+
+<header>🧠 QA Brain Dashboard</header>
+
+<div class="container">
+
+  <div class="card">
+    <h2>📊 Taxa de Sucesso</h2>
+    <div class="big" id="taxa">--%</div>
+  </div>
+
+  <div class="card">
+    <h2>📈 Execuções</h2>
+    <canvas id="grafico"></canvas>
+  </div>
+
+  <div class="card">
+    <h2>🧠 Estratégias</h2>
+    <pre id="estrategias"></pre>
+  </div>
+
+  <div class="card" style="grid-column: span 3;">
+    <h2>📜 Últimos Logs</h2>
+    <pre id="historico"></pre>
+  </div>
+
+</div>
+
+<script>
+async function carregar() {
+  const stats = await fetch("http://127.0.0.1:8000/stats").then(r => r.json())
+  const hist = await fetch("http://127.0.0.1:8000/historico").then(r => r.json())
+  const est = await fetch("http://127.0.0.1:8000/estrategias").then(r => r.json())
+
+  document.getElementById("taxa").innerText = stats.taxa_sucesso + "%"
+
+  document.getElementById("estrategias").innerText = JSON.stringify(est, null, 2)
+
+  document.getElementById("historico").innerText =
+    JSON.stringify(hist.slice(-15), null, 2)
+
+  renderGrafico(hist)
+}
+
+function renderGrafico(hist) {
+  const ultimos = hist.slice(-10)
+
+  const labels = ultimos.map((_, i) => "Exec " + (i+1))
+  const dados = ultimos.map(x => x.sucesso ? 1 : 0)
+
+  new Chart(document.getElementById("grafico"), {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Sucesso',
+        data: dados,
+        tension: 0.3
+      }]
+    }
+  })
+}
+
+carregar()
+
+// auto refresh
+setInterval(carregar, 5000)
+</script>
+
+</body>
+</html>
