@@ -5,9 +5,9 @@
     "passes": 3,
     "pending": 0,
     "failures": 0,
-    "start": "2026-04-13T14:26:07.721Z",
-    "end": "2026-04-13T14:26:18.736Z",
-    "duration": 11015,
+    "start": "2026-04-13T14:46:28.861Z",
+    "end": "2026-04-13T14:46:37.575Z",
+    "duration": 8714,
     "testsRegistered": 3,
     "passPercent": 100,
     "pendingPercent": 0,
@@ -18,7 +18,7 @@
   },
   "results": [
     {
-      "uuid": "20bd521b-67d7-4589-a5ff-d4126e6710d8",
+      "uuid": "4515e0b9-4ffa-494e-840c-2120085fc9d1",
       "title": "",
       "fullFile": "cypress\\e2e\\KAN-57.cy.js",
       "file": "cypress\\e2e\\KAN-57.cy.js",
@@ -27,7 +27,7 @@
       "tests": [],
       "suites": [
         {
-          "uuid": "38af1efa-0ec9-4cf0-b018-e341ad11aead",
+          "uuid": "d5a466f4-59c9-4774-9a85-a72119f35371",
           "title": "Cadastro de Duplicatas - KAN-57",
           "fullFile": "",
           "file": "",
@@ -38,7 +38,7 @@
               "title": "deve cadastrar uma duplicata com sucesso",
               "fullTitle": "Cadastro de Duplicatas - KAN-57 deve cadastrar uma duplicata com sucesso",
               "timedOut": null,
-              "duration": 2414,
+              "duration": 2334,
               "state": "passed",
               "speed": "fast",
               "pass": true,
@@ -47,8 +47,8 @@
               "context": null,
               "code": "cy.visit('http://localhost:8080');\ncy.get('#input-razao-social').type('Empresa Teste LTDA');\ncy.get('#input-cnpj').type('12345678901234');\ncy.get('#input-valor-operacao').type('100.00');\ncy.get('#btn-gerar-duplicata').click();\ncy.get('#msg-sucesso', {\n  timeout: 10000\n}).should('be.visible').and('contain', 'Registro efetuado com sucesso');\ncy.get('#lista-duplicatas tr').should('have.length.at.least', 1);\ncy.get('#contador-titulos').should('contain', '1 títulos encontrados');\ncy.screenshot('evidencia_KAN-57');",
               "err": {},
-              "uuid": "64256f18-bd47-4845-a758-50e493084374",
-              "parentUUID": "38af1efa-0ec9-4cf0-b018-e341ad11aead",
+              "uuid": "6c2e2077-88c9-407a-8443-ab49497ce02f",
+              "parentUUID": "d5a466f4-59c9-4774-9a85-a72119f35371",
               "isHook": false,
               "skipped": false
             },
@@ -56,7 +56,7 @@
               "title": "deve exibir mensagem de erro para campos obrigatórios em branco",
               "fullTitle": "Cadastro de Duplicatas - KAN-57 deve exibir mensagem de erro para campos obrigatórios em branco",
               "timedOut": null,
-              "duration": 3120,
+              "duration": 2064,
               "state": "passed",
               "speed": "fast",
               "pass": true,
@@ -65,8 +65,8 @@
               "context": null,
               "code": "cy.visit('http://localhost:8080');\ncy.get('#btn-gerar-duplicata').click();\ncy.get('#msg-erro').should('be.visible').and('contain', 'Preencha todos os campos obrigatórios');",
               "err": {},
-              "uuid": "a5faf098-c3bd-4133-bad1-1a921c298b61",
-              "parentUUID": "38af1efa-0ec9-4cf0-b018-e341ad11aead",
+              "uuid": "87f37f48-7c9f-4ee8-bd99-878bd91e3898",
+              "parentUUID": "d5a466f4-59c9-4774-9a85-a72119f35371",
               "isHook": false,
               "skipped": false
             },
@@ -74,7 +74,7 @@
               "title": "deve apagar uma duplicata do inventário",
               "fullTitle": "Cadastro de Duplicatas - KAN-57 deve apagar uma duplicata do inventário",
               "timedOut": null,
-              "duration": 4046,
+              "duration": 3040,
               "state": "passed",
               "speed": "fast",
               "pass": true,
@@ -83,22 +83,22 @@
               "context": null,
               "code": "cy.visit('http://localhost:8080');\ncy.get('#input-razao-social').type('Empresa Delete LTDA');\ncy.get('#input-cnpj').type('98765432100000');\ncy.get('#input-valor-operacao').type('250.00');\ncy.get('#btn-gerar-duplicata').click();\ncy.get('#lista-duplicatas tr').should('have.length.at.least', 1);\ncy.get('#lista-duplicatas tr').first().find('button').click();\ncy.get('#feedback-sistema', {\n  timeout: 10000\n}).should('be.visible').and('contain', 'Título removido');\ncy.get('#contador-titulos').should('contain', '0 títulos encontrados');",
               "err": {},
-              "uuid": "64e69496-3077-4f4a-afe5-8747ded0f894",
-              "parentUUID": "38af1efa-0ec9-4cf0-b018-e341ad11aead",
+              "uuid": "5ef3cd7b-d7a9-4df0-b8d8-518e956a460d",
+              "parentUUID": "d5a466f4-59c9-4774-9a85-a72119f35371",
               "isHook": false,
               "skipped": false
             }
           ],
           "suites": [],
           "passes": [
-            "64256f18-bd47-4845-a758-50e493084374",
-            "a5faf098-c3bd-4133-bad1-1a921c298b61",
-            "64e69496-3077-4f4a-afe5-8747ded0f894"
+            "6c2e2077-88c9-407a-8443-ab49497ce02f",
+            "87f37f48-7c9f-4ee8-bd99-878bd91e3898",
+            "5ef3cd7b-d7a9-4df0-b8d8-518e956a460d"
           ],
           "failures": [],
           "pending": [],
           "skipped": [],
-          "duration": 9580,
+          "duration": 7438,
           "root": false,
           "rootEmpty": false,
           "_timeout": 2000

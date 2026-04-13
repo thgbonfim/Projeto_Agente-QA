@@ -26,21 +26,6 @@ def detectar_mensagem_validacao(html: str) -> dict:
             "mensagem": "Preencha todos os campos obrigatórios"
         }
 
-    mensagens_especificas = []
-
-    if "razão social" in html_lower and "obrigat" in html_lower:
-        mensagens_especificas.append("Razão Social")
-    if "cnpj" in html_lower and "obrigat" in html_lower:
-        mensagens_especificas.append("CNPJ")
-    if "valor" in html_lower and "obrigat" in html_lower:
-        mensagens_especificas.append("Valor")
-
-    if mensagens_especificas:
-        return {
-            "tipo": "especifica",
-            "campos": mensagens_especificas
-        }
-
     return {
         "tipo": "generica",
         "mensagem": "Erro"
@@ -59,35 +44,6 @@ def limpar_codigo_js(texto: str) -> str:
 
 def gerar_teste_baseado_no_html(html: str, issue_key: str) -> str:
     regra_validacao = detectar_mensagem_validacao(html)
-
-    if regra_validacao["tipo"] == "generica":
-        bloco_validacao = f"""
-  it('deve exibir mensagem de erro para campos obrigatórios em branco', () => {{
-    cy.visit('http://localhost:8080')
-
-    cy.get('#btn-gerar-duplicata').click()
-
-    cy.get('#msg-erro')
-      .should('be.visible')
-      .and('contain', '{regra_validacao["mensagem"]}')
-  }})
-"""
-    else:
-        asserts = "\n".join([
-            f"    cy.get('#msg-erro').should('contain', '{campo}')"
-            for campo in regra_validacao["campos"]
-        ])
-
-        bloco_validacao = f"""
-  it('deve exibir mensagens de erro para campos obrigatórios em branco', () => {{
-    cy.visit('http://localhost:8080')
-
-    cy.get('#btn-gerar-duplicata').click()
-
-    cy.get('#msg-erro').should('be.visible')
-{asserts}
-  }})
-"""
 
     codigo = f"""describe('Cadastro de Duplicatas - {issue_key}', () => {{
 
@@ -110,7 +66,15 @@ def gerar_teste_baseado_no_html(html: str, issue_key: str) -> str:
     cy.screenshot('evidencia_{issue_key}')
   }})
 
-{bloco_validacao}
+  it('deve exibir mensagem de erro para campos obrigatórios em branco', () => {{
+    cy.visit('http://localhost:8080')
+
+    cy.get('#btn-gerar-duplicata').click()
+
+    cy.get('#msg-erro')
+      .should('be.visible')
+      .and('contain', '{regra_validacao["mensagem"]}')
+  }})
 
   it('deve apagar uma duplicata do inventário', () => {{
     cy.visit('http://localhost:8080')
@@ -153,8 +117,7 @@ REGRAS:
   1. cadastro com sucesso
   2. apagar duplicata
   3. validar mensagem de campos obrigatórios
-- Se o sistema exibir mensagem genérica, valide a mensagem genérica
-- Não invente mensagens específicas se não existirem no HTML
+- Não invente mensagens que não existam no HTML
 - URL: http://localhost:8080
 - use cy.screenshot('evidencia_{issue_key}') no cenário de sucesso
 
@@ -178,72 +141,46 @@ def executar_cypress(caminho_teste: str):
     )
 
 
-def corrigir_teste_local(codigo: str, erro: str, html: str) -> str:
-    erro_lower = erro.lower()
-
-    if "o campo razão social é obrigatório".lower() in erro_lower:
-        regra = detectar_mensagem_validacao(html)
-        if regra["tipo"] == "generica":
-            codigo = re.sub(
-                r"cy\.get\('#msg-erro'\)\.should\('contain',\s*'O campo Razão Social é obrigatório'\)\s*",
-                "",
-                codigo
-            )
-            codigo = re.sub(
-                r"cy\.get\('#msg-erro'\)\.should\('contain',\s*'O campo CNPJ.*?'\)\s*",
-                "",
-                codigo
-            )
-            codigo = re.sub(
-                r"cy\.get\('#msg-erro'\)\.should\('contain',\s*'O campo Valor.*?'\)\s*",
-                "",
-                codigo
-            )
-
-            codigo = codigo.replace(
-                "cy.get('#msg-erro').should('be.visible')",
-                "cy.get('#msg-erro').should('be.visible').and('contain', 'Preencha todos os campos obrigatórios')"
-            )
-
-    return codigo
-
-
-def mover_para_final(issue):
+def mover_para_status(issue, nomes_preferidos):
     transicoes = jira.transitions(issue)
-
-    nomes_preferidos = [
-        "Done",
-        "Concluir",
-        "Finalizar",
-        "Encerrar",
-        "Close Issue",
-        "Resolve Issue"
-    ]
 
     for nome in nomes_preferidos:
         for t in transicoes:
             if t["name"].strip().lower() == nome.strip().lower():
                 jira.transition_issue(issue, t["id"])
-                print(f"✅ Issue {issue.key} movida com a transição: {t['name']}")
+                print(f"✅ {issue.key} movida com a transição: {t['name']}")
                 return True
 
-    print(f"⚠️ Nenhuma transição final encontrada para {issue.key}")
+    print(f"⚠️ Nenhuma transição encontrada para {issue.key}")
     print("🔄 Transições disponíveis:")
     for t in transicoes:
         print(f"- id={t['id']} | name={t['name']}")
     return False
 
 
+def mover_para_testing(issue):
+    return mover_para_status(issue, ["Testing"])
+
+
+def mover_para_done(issue):
+    return mover_para_status(issue, ["Itens concluídos", "Done"])
+
+
 def executar_qa_inteligente():
     print("🧠 [QA HTML-AWARE] Rodando...")
 
-    issues = jira.search_issues(
-        f'project="{PROJECT_KEY}" AND status="Ready for Test"',
-        maxResults=10
-    )
+    jql = f'project="{PROJECT_KEY}" AND status="Ready for Test"'
+    print(f"🔎 JQL: {jql}")
+
+    issues = jira.search_issues(jql, maxResults=10)
+    print(f"📦 Issues encontradas: {len(issues)}")
 
     for issue in issues:
         print(f"\n🎫 Processando {issue.key}")
+
+        if not mover_para_testing(issue):
+            print(f"❌ Não foi possível mover {issue.key} para Testing")
+            continue
 
         if not os.path.exists("index.html"):
             print("❌ index.html não encontrado")
@@ -273,19 +210,12 @@ def executar_qa_inteligente():
                 if os.path.exists(caminho_print):
                     jira.add_attachment(issue=issue, attachment=caminho_print)
 
-                jira.add_comment(issue, "✅ Teste validado com QA que entende o HTML.")
-                mover_para_final(issue)
+                jira.add_comment(issue, "✅ Teste validado com sucesso.")
+                mover_para_done(issue)
                 break
 
             erro = (result.stderr or "") + (result.stdout or "")
             print(f"❌ Erro detectado:\n{erro[:800]}")
-
-            novo_codigo = corrigir_teste_local(codigo, erro, html)
-
-            if novo_codigo != codigo:
-                print("🛠️ Correção local aplicada com base no HTML")
-                codigo = novo_codigo
-                continue
 
             print("🤖 Fallback para IA")
             codigo = gerar_teste_com_ia(html, issue.fields.description, issue.key)

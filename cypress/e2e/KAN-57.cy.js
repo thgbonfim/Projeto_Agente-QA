@@ -19,7 +19,6 @@ describe('Cadastro de Duplicatas - KAN-57', () => {
     cy.screenshot('evidencia_KAN-57')
   })
 
-
   it('deve exibir mensagem de erro para campos obrigatórios em branco', () => {
     cy.visit('http://localhost:8080')
 
@@ -29,7 +28,6 @@ describe('Cadastro de Duplicatas - KAN-57', () => {
       .should('be.visible')
       .and('contain', 'Preencha todos os campos obrigatórios')
   })
-
 
   it('deve apagar uma duplicata do inventário', () => {
     cy.visit('http://localhost:8080')
